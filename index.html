@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #ffe6f2;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #container {
+            text-align: center;
+            z-index: 2;
+            position: relative;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.3s;
+        }
+
+        #mainBtn {
+            background-color: #ff66b3;
+            color: white;
+        }
+
+        #simBtn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #naoBtn {
+            background-color: #ff4444;
+            color: white;
+            position: fixed;
+        }
+
+        #mensagem {
+            font-size: 24px;
+            color: #4CAF50;
+            margin-top: 20px;
+            display: none;
+            font-weight: bold;
+            z-index: 3;
+        }
+
+        .emoji {
+            position: absolute;
+            font-size: 30px;
+            animation: float 4s linear infinite both;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <button id="mainBtn">Me dá mil reias? 💖</button>
+        <div id="opcoes" style="display: none;">
+            <button id="simBtn">SIM</button>
+            <button id="naoBtn">NÃO</button>
+        </div>
+        <div id="mensagem">Eu te amo, mamis! Deus abençoe 💍🌹</div>
+    </div>
+
+    <script>
+        const mainBtn = document.getElementById('mainBtn');
+        const opcoes = document.getElementById('opcoes');
+        const simBtn = document.getElementById('simBtn');
+        const naoBtn = document.getElementById('naoBtn');
+        const mensagem = document.getElementById('mensagem');
+
+        // Configuração inicial
+        mensagem.style.display = 'none';
+        opcoes.style.display = 'none';
+
+        // Evento do botão principal
+        mainBtn.addEventListener('click', () => {
+            opcoes.style.display = 'block';
+            mainBtn.style.display = 'none';
+        });
+
+        // Evento do botão "NÃO"
+        naoBtn.addEventListener('mouseover', () => {
+            const maxX = window.innerWidth - naoBtn.offsetWidth;
+            const maxY = window.innerHeight - naoBtn.offsetHeight;
+            const x = Math.random() * (maxX - 50) + 25;
+            const y = Math.random() * (maxY - 50) + 25;
+
+            naoBtn.style.left = x + 'px';
+            naoBtn.style.top = y + 'px';
+        });
+
+        // Evento do botão "SIM"
+        simBtn.addEventListener('click', () => {
+            mensagem.style.display = 'block';
+            opcoes.style.display = 'none';
+            criarEmojis();
+        });
+
+        // Função para criar emojis
+        let emojiInterval;
+        function criarEmojis() {
+            clearInterval(emojiInterval);
+            const emojis = ['❤️', '💖', '💕', '💓', '💞', '💗'];
+            
+            emojiInterval = setInterval(() => {
+                for (let i = 0; i < 5; i++) {
+                    const emoji = document.createElement('div');
+                    emoji.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+                    emoji.classList.add('emoji');
+
+                    emoji.style.left = Math.random() * (window.innerWidth - 50) + 'px';
+                    emoji.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                    emoji.style.animationDuration = (Math.random() * 3 + 2) + 's';
+
+                    document.body.appendChild(emoji);
+
+                    emoji.addEventListener('animationend', () => {
+                        emoji.remove();
+                    });
+                }
+            }, 300);
+        }
+    </script>
+</body>
+</html>
