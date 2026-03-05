@@ -1,153 +1,863 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #ffe6f2;
-            font-family: Arial, sans-serif;
-            overflow: hidden;
-            position: relative;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Por que eu te amo?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        #container {
-            text-align: center;
-            z-index: 2;
-            position: relative;
-        }
+    body {
+      background: #000;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Dancing Script', cursive;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+    }
 
-        button {
-            padding: 15px 30px;
-            font-size: 20px;
-            margin: 10px;
-            cursor: pointer;
-            border: none;
-            border-radius: 10px;
-            transition: transform 0.3s;
-        }
+    /* ── BACKGROUND PARTICLES ── */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      bottom: -60px;
+      opacity: 0;
+      animation: floatUp linear infinite;
+      will-change: transform, opacity;
+    }
+    @keyframes floatUp {
+      0%   { opacity: 0;    transform: translateY(0)      rotate(0deg)   scale(0.7); }
+      8%   { opacity: 0.9; }
+      85%  { opacity: 0.4; }
+      100% { opacity: 0;    transform: translateY(-115vh) rotate(25deg)  scale(1.1); }
+    }
 
-        #mainBtn {
-            background-color: #ff66b3;
-            color: white;
-        }
+    /* ── SCENE ── */
+    .scene {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+      padding: 16px;
+      width: 100%;
+      max-width: 440px;
+    }
 
-        #simBtn {
-            background-color: #4CAF50;
-            color: white;
-        }
+    /* ── TITLE ── */
+    .title {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1.7rem, 5.5vw, 2.9rem);
+      color: #fff;
+      text-align: center;
+      letter-spacing: 0.01em;
+      line-height: 1.25;
+      text-shadow: 0 0 30px rgba(255,160,200,0.55), 0 2px 8px rgba(0,0,0,0.9);
+      animation: titleGlow 3s ease-in-out infinite alternate;
+      min-height: 3.5em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s;
+    }
+    @keyframes titleGlow {
+      from { text-shadow: 0 0 20px rgba(255,140,180,0.4), 0 2px 8px rgba(0,0,0,0.9); }
+      to   { text-shadow: 0 0 55px rgba(255,130,170,0.9), 0 0 20px rgba(255,80,130,0.4), 0 2px 8px rgba(0,0,0,0.9); }
+    }
 
-        #naoBtn {
-            background-color: #ff4444;
-            color: white;
-            position: fixed;
-        }
+    /* ── CARD STACK ── */
+    .card-stack {
+      position: relative;
+      width: min(82vw, 340px);
+      height: min(82vw * 1.3, 440px);
+      aspect-ratio: 3/4;
+    }
 
-        #mensagem {
-            font-size: 24px;
-            color: #4CAF50;
-            margin-top: 20px;
-            display: none;
-            font-weight: bold;
-            z-index: 3;
-        }
+    .card {
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      overflow: hidden;
+      cursor: grab;
+      touch-action: none;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.07);
+      will-change: transform;
+    }
+    .card:active { cursor: grabbing; }
 
-        .emoji {
-            position: absolute;
-            font-size: 30px;
-            animation: float 4s linear infinite both;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0;
-        }
+    .card img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
 
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-    </style>
+    /* Swipe labels */
+    .card-label {
+      position: absolute;
+      padding: 5px 16px;
+      border-radius: 8px;
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.5rem;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      border: 3px solid;
+      transition: opacity 0.12s;
+    }
+    .card-label.left-lbl  { top: 22px; left: 18px;  color: #ff6b9d; border-color: #ff6b9d; transform: rotate(-12deg); }
+    .card-label.right-lbl { top: 22px; right: 18px; color: #ff6b9d; border-color: #ff6b9d; transform: rotate(12deg);  }
+    .card-label.up-lbl    { top: 18px; left: 50%; transform: translateX(-50%) rotate(-4deg); color: #ffb3d1; border-color: #ffb3d1; }
+    .card-label.down-lbl  { bottom: 60px; left: 50%; transform: translateX(-50%) rotate(4deg); color: #ffd6ea; border-color: #ffd6ea; }
+
+    /* Caption */
+    .card-caption {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 44px 18px 16px;
+      background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%);
+      color: #fff;
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.15rem;
+      text-align: center;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.95);
+    }
+
+    /* Back cards */
+    .card:nth-child(2) { transform: scale(0.95) translateY(11px); z-index:1; filter: brightness(0.55); }
+    .card:nth-child(3) { transform: scale(0.90) translateY(21px); z-index:0; filter: brightness(0.35); }
+    .card:first-child  { z-index: 10; }
+
+    /* ── ARROW HINT ── */
+    .arrow-hint {
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      color: rgba(255,255,255,0.65);
+      font-family: 'Dancing Script', cursive;
+      font-size: 1rem;
+      animation: arrowPulse 2s ease-in-out infinite;
+    }
+    @keyframes arrowPulse {
+      0%,100% { opacity: 0.5; }
+      50%      { opacity: 1; }
+    }
+    .arrow-hint svg { width: 28px; height: 28px; }
+
+    /* ── SPLASH ── */
+    .swipe-splash {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 999;
+      opacity: 0; transition: opacity 0.35s;
+    }
+
+    /* ── CARD 11: CRACK CARD ── */
+    .crack-card {
+      position: absolute; inset: 0;
+      border-radius: 20px;
+      overflow: hidden;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.75);
+    }
+    .crack-card img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.05s;
+    }
+    .crack-canvas {
+      position: absolute; inset: 0;
+      border-radius: 20px;
+      pointer-events: none;
+    }
+    .crack-card .card-caption {
+      pointer-events: none;
+    }
+
+    /* ── FINAL SCREEN ── */
+    #finalScreen {
+      position: fixed; inset: 0;
+      background: #ff85b3;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      overflow: hidden;
+    }
+    .final-particles {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .fp {
+      position: absolute;
+      bottom: -50px;
+      animation: floatUp linear infinite;
+      opacity: 0;
+    }
+    .final-text {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      animation: finalFadeIn 1.2s ease forwards;
+    }
+    @keyframes finalFadeIn {
+      from { opacity:0; transform: scale(0.7); }
+      to   { opacity:1; transform: scale(1); }
+    }
+    .final-text h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(2.4rem, 8vw, 4rem);
+      color: #1a0010;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.2);
+      line-height: 1.2;
+    }
+    .infinity-symbol {
+      font-size: clamp(2.8rem, 9vw, 4.5rem);
+      animation: infinityColor 2s linear infinite;
+      display: inline-block;
+    }
+    @keyframes infinityColor {
+      0%   { color: #1a0010; }
+      33%  { color: #7b2dff; }
+      66%  { color: #2255ff; }
+      100% { color: #1a0010; }
+    }
+
+    /* Heart grow overlay */
+    #heartGrow {
+      position: fixed; inset: 0;
+      pointer-events: none;
+      z-index: 1500;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .heart-grow-el {
+      font-size: 2rem;
+      transform: scale(0);
+      color: #ff69b4;
+      line-height: 1;
+    }
+
+    /* End screen (after all normal cards) */
+    .end-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      text-align: center;
+    }
+    .end-screen .big-heart { font-size: 4.5rem; animation: heartbeat 1.2s ease-in-out infinite; }
+    @keyframes heartbeat {
+      0%,100% { transform: scale(1); }
+      50%      { transform: scale(1.18); }
+    }
+    .end-screen p { font-family:'Dancing Script',cursive; font-size:clamp(1.5rem,5vw,2.2rem); color:#fff; text-shadow:0 0 30px rgba(255,150,180,0.7); }
+    .restart-btn {
+      background: transparent; border: 2px solid rgba(255,255,255,0.4);
+      color: rgba(255,255,255,0.7); font-family:'Dancing Script',cursive;
+      font-size:1.1rem; padding:10px 28px; border-radius:50px; cursor:pointer; transition:all 0.3s;
+    }
+    .restart-btn:hover { background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.7); color:#fff; }
+  </style>
 </head>
 <body>
-    <div id="container">
-        <button id="mainBtn">Me dá mil reias? 💖</button>
-        <div id="opcoes" style="display: none;">
-            <button id="simBtn">SIM</button>
-            <button id="naoBtn">NÃO</button>
-        </div>
-        <div id="mensagem">Eu te amo, mamis! Deus abençoe 💍🌹</div>
-    </div>
 
-    <script>
-        const mainBtn = document.getElementById('mainBtn');
-        const opcoes = document.getElementById('opcoes');
-        const simBtn = document.getElementById('simBtn');
-        const naoBtn = document.getElementById('naoBtn');
-        const mensagem = document.getElementById('mensagem');
+<div class="bg-layer" id="bgLayer"></div>
+<div class="swipe-splash" id="swipeSplash"></div>
+<div id="heartGrow"><div class="heart-grow-el" id="heartGrowEl">♥</div></div>
 
-        // Configuração inicial
-        mensagem.style.display = 'none';
-        opcoes.style.display = 'none';
+<!-- FINAL SCREEN -->
+<div id="finalScreen">
+  <div class="final-particles" id="finalParticles"></div>
+  <div class="final-text">
+    <h1>EU TE AMO INFINITAMENTE, MIRELLA</h1>
+    <span class="infinity-symbol">∞</span>
+  </div>
+</div>
 
-        // Evento do botão principal
-        mainBtn.addEventListener('click', () => {
-            opcoes.style.display = 'block';
-            mainBtn.style.display = 'none';
+<div class="scene" id="scene">
+  <div class="title" id="mainTitle">por que eu te amo?</div>
+  <div class="card-stack" id="cardStack"></div>
+  <div class="arrow-hint" id="arrowHint"></div>
+  <div class="end-screen" id="endScreen">
+    <div class="big-heart">💕</div>
+    <p>te amo demais,<br>minha princesa ♡</p>
+    <button class="restart-btn" onclick="restartCards()">recomeçar ↺</button>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+//  CARD DATA
+//  swipe: 'horizontal' | 'up' | 'down'
+//  caption: small text at bottom of photo
+// ─────────────────────────────────────────────────────────────
+const PHOTO = "1772469080207.jpg"; // mesma foto para todos por enquanto
+
+const cards = [
+  { src: PHOTO, title: "Mi, sabe por que eu te amo?",                                       swipe: "horizontal", caption: "" },
+  { src: PHOTO, title: "Por causa do seu sorriso...",                                       swipe: "up",         caption: "" },
+  { src: PHOTO, title: "Por causa dos seus biquinhos...",                                   swipe: "down",       caption: "" },
+  { src: PHOTO, title: "Por causa dos seus abraços...",                                     swipe: "horizontal", caption: "" },
+  { src: PHOTO, title: "Por causa dos seus carinhos...",                                    swipe: "up",         caption: "" },
+  { src: PHOTO, title: "Por causa dos seus olhos...",                                       swipe: "down",       caption: "" },
+  { src: PHOTO, title: "Por causa da sua fé...",                                            swipe: "horizontal", caption: "" },
+  { src: PHOTO, title: "Por causa dos seus beijos...",                                      swipe: "up",         caption: "" },
+  { src: PHOTO, title: "Por causa de quem és...",                                           swipe: "down",       caption: "" },
+  { src: PHOTO, title: "Por causa da minha insuficiência em listar todas as razões,\ntantas são elas", swipe: "horizontal", caption: "" },
+  { src: PHOTO, title: "Mas, principalmente...\npois me cativastes!",                      swipe: "horizontal", caption: "" },
+  // Card 11: crack card (special) — handled separately
+  { src: PHOTO, title: "clique para saber o tamanho do\namor que sinto por você",          swipe: "crack",      caption: "" },
+];
+
+// Arrow SVGs
+const SVG = {
+  left:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`,
+  right: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`,
+  up:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>`,
+  down:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`,
+};
+
+function arrowHTML(swipe) {
+  if (swipe === 'horizontal') return SVG.left + '<span>arraste</span>' + SVG.right;
+  if (swipe === 'up')         return SVG.up   + '<span>deslize pra cima</span>';
+  if (swipe === 'down')       return SVG.down + '<span>deslize pra baixo</span>';
+  if (swipe === 'crack')      return '<span>toque na foto</span>';
+  return '';
+}
+
+// ─────────────────────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────────────────────
+let cardEls = [];
+let currentIndex = 0; // which card data index is on top
+
+const stack       = document.getElementById('cardStack');
+const arrowHint   = document.getElementById('arrowHint');
+const endScreen   = document.getElementById('endScreen');
+const mainTitle   = document.getElementById('mainTitle');
+const splash      = document.getElementById('swipeSplash');
+
+// ─────────────────────────────────────────────────────────────
+//  BUILD
+// ─────────────────────────────────────────────────────────────
+function buildCards() {
+  stack.innerHTML = '';
+  cardEls = [];
+  currentIndex = 0;
+
+  // Show top 3 cards visually
+  for (let i = Math.min(2, cards.length - 1); i >= 0; i--) {
+    cardEls.unshift(createCardEl(i));
+  }
+  updateStackVisuals();
+
+  const swipe = cards[0].swipe;
+  arrowHint.innerHTML = arrowHTML(swipe);
+
+  if (swipe === 'crack') {
+    setupCrackCard(cardEls[0]);
+  } else {
+    attachDrag(cardEls[0], swipe);
+  }
+}
+
+function createCardEl(dataIndex) {
+  const data = cards[dataIndex];
+
+  if (data.swipe === 'crack') {
+    return createCrackCardEl(data, dataIndex);
+  }
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.index = dataIndex;
+
+  const img = document.createElement('img');
+  img.src = data.src; img.alt = 'foto';
+
+  // Labels
+  const lblLeft  = lbl('left-lbl',  '♡ amor');
+  const lblRight = lbl('right-lbl', '♡ amor');
+  const lblUp    = lbl('up-lbl',    '♡');
+  const lblDown  = lbl('down-lbl',  '♡');
+
+  const cap = document.createElement('div');
+  cap.className = 'card-caption';
+  cap.textContent = data.caption;
+
+  card.append(img, lblLeft, lblRight, lblUp, lblDown, cap);
+  stack.appendChild(card);
+  return card;
+}
+
+function lbl(cls, text) {
+  const el = document.createElement('div');
+  el.className = 'card-label ' + cls;
+  el.textContent = text;
+  return el;
+}
+
+// ─────────────────────────────────────────────────────────────
+//  STACK VISUALS
+// ─────────────────────────────────────────────────────────────
+function updateStackVisuals() {
+  cardEls.forEach((el, i) => {
+    el.style.transition = 'transform 0.4s cubic-bezier(.22,.68,0,1.2), filter 0.4s';
+    if (i === 0) {
+      el.style.transform = 'scale(1) translateY(0) rotate(0deg)';
+      el.style.filter = 'brightness(1)';
+      el.style.zIndex = 10;
+    } else if (i === 1) {
+      el.style.transform = 'scale(0.95) translateY(11px)';
+      el.style.filter = 'brightness(0.55)';
+      el.style.zIndex = 1;
+    } else {
+      el.style.transform = 'scale(0.90) translateY(21px)';
+      el.style.filter = 'brightness(0.35)';
+      el.style.zIndex = 0;
+    }
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+//  TITLE UPDATE
+// ─────────────────────────────────────────────────────────────
+function updateTitle(dataIndex) {
+  const raw = cards[dataIndex].title;
+  mainTitle.style.opacity = '0';
+  setTimeout(() => {
+    mainTitle.innerHTML = raw.replace(/\n/g, '<br>');
+    mainTitle.style.opacity = '1';
+  }, 300);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  DRAG
+// ─────────────────────────────────────────────────────────────
+function attachDrag(card, swipe) {
+  if (!card) return;
+  let startX, startY, curX = 0, curY = 0, dragging = false;
+
+  function onStart(e) {
+    dragging = true;
+    const pt = e.touches ? e.touches[0] : e;
+    startX = pt.clientX; startY = pt.clientY;
+    card.style.transition = 'none';
+  }
+
+  function onMove(e) {
+    if (!dragging) return;
+    e.preventDefault();
+    const pt = e.touches ? e.touches[0] : e;
+    curX = pt.clientX - startX;
+    curY = pt.clientY - startY;
+
+    let tx = 0, ty = 0, rot = 0;
+
+    if (swipe === 'horizontal') {
+      tx = curX; ty = curY * 0.2; rot = curX * 0.07;
+      showLabel(card, curX > 0 ? 'right-lbl' : 'left-lbl', Math.abs(curX) / 110);
+    } else if (swipe === 'up') {
+      ty = curY; tx = curX * 0.15;
+      showLabel(card, curY < 0 ? 'up-lbl' : null, Math.abs(curY) / 110);
+    } else if (swipe === 'down') {
+      ty = curY; tx = curX * 0.15;
+      showLabel(card, curY > 0 ? 'down-lbl' : null, Math.abs(curY) / 110);
+    }
+
+    card.style.transform = `translateX(${tx}px) translateY(${ty}px) rotate(${rot}deg)`;
+  }
+
+  function onEnd() {
+    if (!dragging) return;
+    dragging = false;
+    clearLabels(card);
+
+    const threshold = window.innerWidth * 0.28;
+    const thresholdV = window.innerHeight * 0.22;
+    let flyOut = false;
+
+    if (swipe === 'horizontal' && Math.abs(curX) > threshold) {
+      flyOutCard(card, curX > 0 ? 'right' : 'left'); flyOut = true;
+    } else if (swipe === 'up' && curY < -thresholdV) {
+      flyOutCard(card, 'up'); flyOut = true;
+    } else if (swipe === 'down' && curY > thresholdV) {
+      flyOutCard(card, 'down'); flyOut = true;
+    }
+
+    if (!flyOut) {
+      card.style.transition = 'transform 0.5s cubic-bezier(.22,.68,0,1.2)';
+      card.style.transform = 'scale(1) translateY(0) rotate(0deg)';
+      curX = 0; curY = 0;
+    }
+  }
+
+  card.addEventListener('mousedown', onStart);
+  card.addEventListener('touchstart', onStart, { passive: true });
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('touchmove', onMove, { passive: false });
+  window.addEventListener('mouseup', onEnd);
+  window.addEventListener('touchend', onEnd);
+
+  card._cleanup = () => {
+    card.removeEventListener('mousedown', onStart);
+    card.removeEventListener('touchstart', onStart);
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('touchmove', onMove);
+    window.removeEventListener('mouseup', onEnd);
+    window.removeEventListener('touchend', onEnd);
+  };
+}
+
+function showLabel(card, cls, ratio) {
+  ['left-lbl','right-lbl','up-lbl','down-lbl'].forEach(c => {
+    const el = card.querySelector('.card-label.' + c);
+    if (el) el.style.opacity = (cls === c) ? Math.min(ratio, 1) : 0;
+  });
+}
+function clearLabels(card) {
+  card.querySelectorAll('.card-label').forEach(el => el.style.opacity = 0);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  FLY OUT
+// ─────────────────────────────────────────────────────────────
+function flyOutCard(card, direction) {
+  const W = window.innerWidth, H = window.innerHeight;
+  let tx = 0, ty = 0, rot = 0;
+  if (direction === 'right') { tx =  W * 1.5; rot =  30; }
+  if (direction === 'left')  { tx = -W * 1.5; rot = -30; }
+  if (direction === 'up')    { ty = -H * 1.3; }
+  if (direction === 'down')  { ty =  H * 1.3; }
+
+  card.style.transition = 'transform 0.42s cubic-bezier(.55,.055,.675,.19), opacity 0.42s';
+  card.style.transform = `translateX(${tx}px) translateY(${ty}px) rotate(${rot}deg)`;
+  card.style.opacity = '0';
+
+  // Splash
+  splash.style.background = `radial-gradient(circle at center, rgba(255,107,157,0.15) 0%, transparent 70%)`;
+  splash.style.opacity = '1';
+  setTimeout(() => { splash.style.opacity = '0'; }, 350);
+
+  if (card._cleanup) card._cleanup();
+
+  setTimeout(() => {
+    card.remove();
+    cardEls.shift();
+    currentIndex++;
+
+    if (currentIndex >= cards.length) {
+      showEnd(); return;
+    }
+
+    // Add next card to back of visual stack if needed
+    const nextVisualIndex = currentIndex + 2;
+    if (nextVisualIndex < cards.length) {
+      const newCard = createCardEl(nextVisualIndex);
+      cardEls.push(newCard);
+    }
+
+    updateStackVisuals();
+    updateTitle(currentIndex);
+
+    const newSwipe = cards[currentIndex].swipe;
+    arrowHint.innerHTML = arrowHTML(newSwipe);
+
+    if (newSwipe === 'crack') {
+      setupCrackCard(cardEls[0]);
+    } else {
+      attachDrag(cardEls[0], newSwipe);
+    }
+  }, 440);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  CRACK CARD (card 11)
+// ─────────────────────────────────────────────────────────────
+function createCrackCardEl(data, dataIndex) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'crack-card';
+  wrapper.dataset.index = dataIndex;
+
+  const img = document.createElement('img');
+  img.src = data.src; img.alt = 'foto';
+
+  const canvas = document.createElement('canvas');
+  canvas.className = 'crack-canvas';
+
+  const cap = document.createElement('div');
+  cap.className = 'card-caption';
+  cap.innerHTML = data.title.replace(/\n/g,'<br>');
+
+  wrapper.append(img, canvas, cap);
+  stack.appendChild(wrapper);
+  return wrapper;
+}
+
+function setupCrackCard(card) {
+  const canvas = card.querySelector('.crack-canvas');
+  const img    = card.querySelector('img');
+  let clicks = 0;
+  const MAX = 50;
+
+  // Size canvas
+  function resizeCanvas() {
+    canvas.width  = card.offsetWidth;
+    canvas.height = card.offsetHeight;
+  }
+  resizeCanvas();
+
+  const ctx = canvas.getContext('2d');
+  const cracks = [];
+
+  function drawCracks() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    cracks.forEach(crack => {
+      ctx.beginPath();
+      ctx.strokeStyle = `rgba(255,255,255,${0.4 + crack.age * 0.02})`;
+      ctx.lineWidth = 0.8 + crack.age * 0.04;
+      ctx.shadowColor = 'rgba(255,255,255,0.6)';
+      ctx.shadowBlur = 3;
+      let x = crack.x, y = crack.y;
+      ctx.moveTo(x, y);
+      crack.branches.forEach(b => {
+        let bx = x, by = y;
+        b.forEach(pt => {
+          ctx.lineTo(bx + pt.dx, by + pt.dy);
+          bx += pt.dx; by += pt.dy;
         });
+      });
+      ctx.stroke();
+    });
+  }
 
-        // Evento do botão "NÃO"
-        naoBtn.addEventListener('mouseover', () => {
-            const maxX = window.innerWidth - naoBtn.offsetWidth;
-            const maxY = window.innerHeight - naoBtn.offsetHeight;
-            const x = Math.random() * (maxX - 50) + 25;
-            const y = Math.random() * (maxY - 50) + 25;
+  function addCrack() {
+    const w = canvas.width, h = canvas.height;
+    const cx = w / 2 + (Math.random() - 0.5) * w * 0.4;
+    const cy = h / 2 + (Math.random() - 0.5) * h * 0.4;
+    const numBranches = 3 + Math.floor(Math.random() * 4);
+    const branches = [];
+    for (let b = 0; b < numBranches; b++) {
+      const angle = (Math.PI * 2 / numBranches) * b + Math.random() * 0.5;
+      const len = 20 + Math.random() * 50;
+      const pts = [];
+      let curAngle = angle;
+      let remaining = len;
+      while (remaining > 0) {
+        const step = 5 + Math.random() * 8;
+        curAngle += (Math.random() - 0.5) * 0.4;
+        pts.push({ dx: Math.cos(curAngle) * step, dy: Math.sin(curAngle) * step });
+        remaining -= step;
+      }
+      branches.push(pts);
+    }
+    cracks.push({ x: cx, y: cy, branches, age: clicks });
+  }
 
-            naoBtn.style.left = x + 'px';
-            naoBtn.style.top = y + 'px';
-        });
+  // Shake
+  function shake() {
+    const intensity = Math.min(clicks / 5, 8);
+    let t = 0;
+    const interval = setInterval(() => {
+      const dx = (Math.random() - 0.5) * intensity;
+      const dy = (Math.random() - 0.5) * intensity;
+      img.style.transform = `translate(${dx}px,${dy}px)`;
+      t++;
+      if (t > 6) { clearInterval(interval); img.style.transform = ''; }
+    }, 30);
+  }
 
-        // Evento do botão "SIM"
-        simBtn.addEventListener('click', () => {
-            mensagem.style.display = 'block';
-            opcoes.style.display = 'none';
-            criarEmojis();
-        });
+  function onTap(e) {
+    e.preventDefault();
+    clicks++;
+    shake();
+    if (clicks % 2 === 0) addCrack();
+    drawCracks();
 
-        // Função para criar emojis
-        let emojiInterval;
-        function criarEmojis() {
-            clearInterval(emojiInterval);
-            const emojis = ['❤️', '💖', '💕', '💓', '💞', '💗'];
-            
-            emojiInterval = setInterval(() => {
-                for (let i = 0; i < 5; i++) {
-                    const emoji = document.createElement('div');
-                    emoji.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
-                    emoji.classList.add('emoji');
+    if (clicks >= MAX) {
+      card.removeEventListener('click', onTap);
+      card.removeEventListener('touchend', onTap);
+      triggerBreak(card, canvas, ctx);
+    }
+  }
 
-                    emoji.style.left = Math.random() * (window.innerWidth - 50) + 'px';
-                    emoji.style.fontSize = (Math.random() * 20 + 20) + 'px';
-                    emoji.style.animationDuration = (Math.random() * 3 + 2) + 's';
+  card.addEventListener('click', onTap);
+  card.addEventListener('touchend', onTap);
+}
 
-                    document.body.appendChild(emoji);
+function triggerBreak(card, canvas, ctx) {
+  // Shatter: animate shards flying out
+  const w = canvas.width, h = canvas.height;
 
-                    emoji.addEventListener('animationend', () => {
-                        emoji.remove();
-                    });
-                }
-            }, 300);
-        }
-    </script>
+  // Draw shatter lines
+  ctx.clearRect(0,0,w,h);
+  for (let i = 0; i < 12; i++) {
+    const angle = (Math.PI * 2 / 12) * i;
+    ctx.beginPath();
+    ctx.moveTo(w/2, h/2);
+    ctx.lineTo(w/2 + Math.cos(angle)*w, h/2 + Math.sin(angle)*h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+    ctx.lineWidth = 2;
+    ctx.shadowColor = 'white';
+    ctx.shadowBlur = 8;
+    ctx.stroke();
+  }
+
+  // Fly the card away
+  setTimeout(() => {
+    card.style.transition = 'transform 0.6s ease-in, opacity 0.6s';
+    card.style.transform = 'scale(1.08)';
+    card.style.opacity = '0';
+
+    // Grow heart
+    growHeart(() => {
+      showFinalScreen();
+    });
+  }, 300);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  HEART GROW
+// ─────────────────────────────────────────────────────────────
+function growHeart(onDone) {
+  const el = document.getElementById('heartGrowEl');
+  el.style.transition = 'none';
+  el.style.transform = 'scale(0)';
+  el.style.color = '#ff69b4';
+
+  // Force reflow
+  el.offsetHeight;
+
+  el.style.transition = 'transform 1.2s cubic-bezier(.17,.67,.35,1.2), color 1.2s';
+  el.style.transform = 'scale(80)';
+  el.style.color = '#ff85b3';
+
+  setTimeout(onDone, 900);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  FINAL SCREEN
+// ─────────────────────────────────────────────────────────────
+function showFinalScreen() {
+  document.getElementById('finalScreen').style.display = 'flex';
+  spawnFinalParticles();
+
+  // Reset heart grow
+  setTimeout(() => {
+    const el = document.getElementById('heartGrowEl');
+    el.style.transition = 'none';
+    el.style.transform = 'scale(0)';
+  }, 500);
+}
+
+function spawnFinalParticles() {
+  const container = document.getElementById('finalParticles');
+  const items = ['∞','∞','∞','♥','♥','♡','♡'];
+  const colors = ['#7b2dff','#9b4dff','#ff4466','#fff','#ffb3cc','#5500ff'];
+
+  function spawn() {
+    const el = document.createElement('span');
+    el.className = 'fp';
+    el.textContent = items[Math.floor(Math.random() * items.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.fontSize = (0.7 + Math.random() * 1.1) + 'rem';
+    el.style.color = colors[Math.floor(Math.random() * colors.length)];
+    const dur = 4 + Math.random() * 6;
+    el.style.animationDuration = dur + 's';
+    el.style.animationDelay = (Math.random() * -dur) + 's';
+    container.appendChild(el);
+    setTimeout(() => el.remove(), (dur + 2) * 1000);
+  }
+
+  for (let i = 0; i < 30; i++) spawn();
+  setInterval(spawn, 400);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  END SCREEN (after all swipeable cards)
+// ─────────────────────────────────────────────────────────────
+function showEnd() {
+  arrowHint.style.display = 'none';
+  mainTitle.style.display = 'none';
+  endScreen.style.display = 'flex';
+}
+
+function restartCards() {
+  endScreen.style.display = 'none';
+  mainTitle.style.display = '';
+  arrowHint.style.display = '';
+  currentIndex = 0;
+  buildCards();
+  updateTitle(0);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  BACKGROUND PARTICLES (hearts + flowers)
+// ─────────────────────────────────────────────────────────────
+const bgLayer = document.getElementById('bgLayer');
+const heartItems  = ['♡','♥','💕','💗'];
+const flowerItems = ['✿','❀','✾','🌸','🌺','❁'];
+const heartColors = [
+  '#ff4466','#ff6688','#ffaabb',  // reds
+  '#ffffff','#ffe0e8',             // whites
+  '#ff85b3','#ffb3cc','#ff69b4',  // pinks
+];
+
+function spawnParticle(isFlower) {
+  const el = document.createElement('span');
+  el.className = 'particle';
+
+  if (isFlower) {
+    el.textContent = flowerItems[Math.floor(Math.random() * flowerItems.length)];
+    const hue = Math.random() < 0.5 ? `hsl(${320 + Math.random()*30}deg,80%,${65+Math.random()*20}%)` : '#fff';
+    el.style.color = hue;
+    el.style.fontSize = (0.7 + Math.random() * 0.9) + 'rem';
+  } else {
+    el.textContent = heartItems[Math.floor(Math.random() * heartItems.length)];
+    el.style.color = heartColors[Math.floor(Math.random() * heartColors.length)];
+    // Small to medium sizes
+    el.style.fontSize = (0.5 + Math.random() * 1.1) + 'rem';
+  }
+
+  el.style.left = Math.random() * 100 + 'vw';
+  const dur = 7 + Math.random() * 9;
+  el.style.animationDuration = dur + 's';
+  el.style.animationDelay   = (Math.random() * -dur) + 's';
+  bgLayer.appendChild(el);
+  setTimeout(() => el.remove(), (dur + 2) * 1000);
+}
+
+// Initial burst
+for (let i = 0; i < 18; i++) spawnParticle(i % 4 === 0); // mix hearts + flowers
+// Ongoing
+setInterval(() => spawnParticle(false), 900);
+setInterval(() => spawnParticle(true),  2200);
+
+// ─────────────────────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────────────────────
+buildCards();
+updateTitle(0);
+</script>
 </body>
 </html>
