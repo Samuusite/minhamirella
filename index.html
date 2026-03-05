@@ -20,7 +20,6 @@
       -webkit-user-select: none;
     }
 
-    /* ── BACKGROUND PARTICLES ── */
     .bg-layer {
       position: fixed;
       inset: 0;
@@ -42,7 +41,6 @@
       100% { opacity: 0;    transform: translateY(-115vh) rotate(25deg)  scale(1.1); }
     }
 
-    /* ── SCENE ── */
     .scene {
       position: relative;
       z-index: 1;
@@ -55,7 +53,6 @@
       max-width: 440px;
     }
 
-    /* ── TITLE ── */
     .title {
       font-family: 'Dancing Script', cursive;
       font-size: clamp(1.7rem, 5.5vw, 2.9rem);
@@ -76,7 +73,6 @@
       to   { text-shadow: 0 0 55px rgba(255,130,170,0.9), 0 0 20px rgba(255,80,130,0.4), 0 2px 8px rgba(0,0,0,0.9); }
     }
 
-    /* ── CARD STACK ── */
     .card-stack {
       position: relative;
       width: min(82vw, 340px);
@@ -103,7 +99,6 @@
       pointer-events: none;
     }
 
-    /* Swipe labels */
     .card-label {
       position: absolute;
       padding: 5px 16px;
@@ -121,7 +116,6 @@
     .card-label.up-lbl    { top: 18px; left: 50%; transform: translateX(-50%) rotate(-4deg); color: #ffb3d1; border-color: #ffb3d1; }
     .card-label.down-lbl  { bottom: 60px; left: 50%; transform: translateX(-50%) rotate(4deg); color: #ffd6ea; border-color: #ffd6ea; }
 
-    /* Caption */
     .card-caption {
       position: absolute;
       bottom: 0; left: 0; right: 0;
@@ -134,12 +128,10 @@
       text-shadow: 0 1px 4px rgba(0,0,0,0.95);
     }
 
-    /* Back cards */
     .card:nth-child(2) { transform: scale(0.95) translateY(11px); z-index:1; filter: brightness(0.55); }
     .card:nth-child(3) { transform: scale(0.90) translateY(21px); z-index:0; filter: brightness(0.35); }
     .card:first-child  { z-index: 10; }
 
-    /* ── ARROW HINT ── */
     .arrow-hint {
       height: 44px;
       display: flex;
@@ -157,14 +149,12 @@
     }
     .arrow-hint svg { width: 28px; height: 28px; }
 
-    /* ── SPLASH ── */
     .swipe-splash {
       position: fixed; inset: 0;
       pointer-events: none; z-index: 999;
       opacity: 0; transition: opacity 0.35s;
     }
 
-    /* ── CARD 11: CRACK CARD ── */
     .crack-card {
       position: absolute; inset: 0;
       border-radius: 20px;
@@ -188,7 +178,6 @@
       pointer-events: none;
     }
 
-    /* ── FINAL SCREEN ── */
     #finalScreen {
       position: fixed; inset: 0;
       background: #ff85b3;
@@ -243,7 +232,6 @@
       100% { color: #1a0010; }
     }
 
-    /* Heart grow overlay */
     #heartGrow {
       position: fixed; inset: 0;
       pointer-events: none;
@@ -257,7 +245,6 @@
       line-height: 1;
     }
 
-    /* End screen (after all normal cards) */
     .end-screen {
       display: none;
       flex-direction: column;
@@ -285,7 +272,6 @@
 <div class="swipe-splash" id="swipeSplash"></div>
 <div id="heartGrow"><div class="heart-grow-el" id="heartGrowEl">♥</div></div>
 
-<!-- FINAL SCREEN -->
 <div id="finalScreen">
   <div class="final-particles" id="finalParticles"></div>
   <div class="final-text">
@@ -306,30 +292,21 @@
 </div>
 
 <script>
-// ─────────────────────────────────────────────────────────────
-//  CARD DATA
-//  swipe: 'horizontal' | 'up' | 'down'
-//  caption: small text at bottom of photo
-// ─────────────────────────────────────────────────────────────
-const PHOTO = "1772469080207.jpg"; // mesma foto para todos por enquanto
-
 const cards = [
-  { src: PHOTO, title: "Mi, sabe por que eu te amo?",                                       swipe: "horizontal", caption: "" },
-  { src: PHOTO, title: "Por causa do seu sorriso...",                                       swipe: "up",         caption: "" },
-  { src: PHOTO, title: "Por causa dos seus biquinhos...",                                   swipe: "down",       caption: "" },
-  { src: PHOTO, title: "Por causa dos seus abraços...",                                     swipe: "horizontal", caption: "" },
-  { src: PHOTO, title: "Por causa dos seus carinhos...",                                    swipe: "up",         caption: "" },
-  { src: PHOTO, title: "Por causa dos seus olhos...",                                       swipe: "down",       caption: "" },
-  { src: PHOTO, title: "Por causa da sua fé...",                                            swipe: "horizontal", caption: "" },
-  { src: PHOTO, title: "Por causa dos seus beijos...",                                      swipe: "up",         caption: "" },
-  { src: PHOTO, title: "Por causa de quem és...",                                           swipe: "down",       caption: "" },
-  { src: PHOTO, title: "Por causa da minha insuficiência em listar todas as razões,\ntantas são elas", swipe: "horizontal", caption: "" },
-  { src: PHOTO, title: "Mas, principalmente...\npois me cativastes!",                      swipe: "horizontal", caption: "" },
-  // Card 11: crack card (special) — handled separately
-  { src: PHOTO, title: "clique para saber o tamanho do\namor que sinto por você",          swipe: "crack",      caption: "" },
+  { src: "foto1.jpg",  title: "Gatinha, sabe por que eu te amo?",                                  swipe: "horizontal", caption: "" },
+  { src: "foto2.jpg",  title: "Por causa do seu sorriso...",                                       swipe: "up",         caption: "" },
+  { src: "foto3.jpg",  title: "Por causa dos seus biquinhos...",                                   swipe: "down",       caption: "" },
+  { src: "foto4.jpg",  title: "Por causa dos seus abraços...",                                     swipe: "horizontal", caption: "" },
+  { src: "foto5.jpg",  title: "Por causa dos seus carinhos...",                                    swipe: "up",         caption: "" },
+  { src: "foto6.jpg",  title: "Por causa dos seus olhos...",                                       swipe: "down",       caption: "" },
+  { src: "foto7.jpg",  title: "Por causa da sua fé...",                                            swipe: "horizontal", caption: "" },
+  { src: "foto8.jpg",  title: "Por causa dos seus beijos...",                                      swipe: "up",         caption: "" },
+  { src: "foto9.jpg",  title: "Por causa de quem és...",                                           swipe: "down",       caption: "" },
+  { src: "foto10.jpg", title: "Por causa da minha insuficiência em listar todas as razões,\ntantas são elas", swipe: "horizontal", caption: "" },
+  { src: "foto11.jpg", title: "Mas, principalmente...\npois me cativastes!",                      swipe: "horizontal", caption: "" },
+  { src: "foto12.jpg", title: "clique para saber o tamanho do\namor que sinto por você",          swipe: "crack",      caption: "" },
 ];
 
-// Arrow SVGs
 const SVG = {
   left:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`,
   right: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`,
@@ -345,27 +322,20 @@ function arrowHTML(swipe) {
   return '';
 }
 
-// ─────────────────────────────────────────────────────────────
-//  STATE
-// ─────────────────────────────────────────────────────────────
 let cardEls = [];
-let currentIndex = 0; // which card data index is on top
+let currentIndex = 0;
 
-const stack       = document.getElementById('cardStack');
-const arrowHint   = document.getElementById('arrowHint');
-const endScreen   = document.getElementById('endScreen');
-const mainTitle   = document.getElementById('mainTitle');
-const splash      = document.getElementById('swipeSplash');
+const stack     = document.getElementById('cardStack');
+const arrowHint = document.getElementById('arrowHint');
+const endScreen = document.getElementById('endScreen');
+const mainTitle = document.getElementById('mainTitle');
+const splash    = document.getElementById('swipeSplash');
 
-// ─────────────────────────────────────────────────────────────
-//  BUILD
-// ─────────────────────────────────────────────────────────────
 function buildCards() {
   stack.innerHTML = '';
   cardEls = [];
   currentIndex = 0;
 
-  // Show top 3 cards visually
   for (let i = Math.min(2, cards.length - 1); i >= 0; i--) {
     cardEls.unshift(createCardEl(i));
   }
@@ -374,19 +344,13 @@ function buildCards() {
   const swipe = cards[0].swipe;
   arrowHint.innerHTML = arrowHTML(swipe);
 
-  if (swipe === 'crack') {
-    setupCrackCard(cardEls[0]);
-  } else {
-    attachDrag(cardEls[0], swipe);
-  }
+  if (swipe === 'crack') setupCrackCard(cardEls[0]);
+  else attachDrag(cardEls[0], swipe);
 }
 
 function createCardEl(dataIndex) {
   const data = cards[dataIndex];
-
-  if (data.swipe === 'crack') {
-    return createCrackCardEl(data, dataIndex);
-  }
+  if (data.swipe === 'crack') return createCrackCardEl(data, dataIndex);
 
   const card = document.createElement('div');
   card.className = 'card';
@@ -395,7 +359,6 @@ function createCardEl(dataIndex) {
   const img = document.createElement('img');
   img.src = data.src; img.alt = 'foto';
 
-  // Labels
   const lblLeft  = lbl('left-lbl',  '♡ amor');
   const lblRight = lbl('right-lbl', '♡ amor');
   const lblUp    = lbl('up-lbl',    '♡');
@@ -417,9 +380,6 @@ function lbl(cls, text) {
   return el;
 }
 
-// ─────────────────────────────────────────────────────────────
-//  STACK VISUALS
-// ─────────────────────────────────────────────────────────────
 function updateStackVisuals() {
   cardEls.forEach((el, i) => {
     el.style.transition = 'transform 0.4s cubic-bezier(.22,.68,0,1.2), filter 0.4s';
@@ -439,9 +399,6 @@ function updateStackVisuals() {
   });
 }
 
-// ─────────────────────────────────────────────────────────────
-//  TITLE UPDATE
-// ─────────────────────────────────────────────────────────────
 function updateTitle(dataIndex) {
   const raw = cards[dataIndex].title;
   mainTitle.style.opacity = '0';
@@ -451,9 +408,6 @@ function updateTitle(dataIndex) {
   }, 300);
 }
 
-// ─────────────────────────────────────────────────────────────
-//  DRAG
-// ─────────────────────────────────────────────────────────────
 function attachDrag(card, swipe) {
   if (!card) return;
   let startX, startY, curX = 0, curY = 0, dragging = false;
@@ -493,19 +447,19 @@ function attachDrag(card, swipe) {
     dragging = false;
     clearLabels(card);
 
-    const threshold = window.innerWidth * 0.28;
+    const threshold  = window.innerWidth  * 0.28;
     const thresholdV = window.innerHeight * 0.22;
-    let flyOut = false;
+    let flew = false;
 
     if (swipe === 'horizontal' && Math.abs(curX) > threshold) {
-      flyOutCard(card, curX > 0 ? 'right' : 'left'); flyOut = true;
+      flyOutCard(card, curX > 0 ? 'right' : 'left'); flew = true;
     } else if (swipe === 'up' && curY < -thresholdV) {
-      flyOutCard(card, 'up'); flyOut = true;
+      flyOutCard(card, 'up'); flew = true;
     } else if (swipe === 'down' && curY > thresholdV) {
-      flyOutCard(card, 'down'); flyOut = true;
+      flyOutCard(card, 'down'); flew = true;
     }
 
-    if (!flyOut) {
+    if (!flew) {
       card.style.transition = 'transform 0.5s cubic-bezier(.22,.68,0,1.2)';
       card.style.transform = 'scale(1) translateY(0) rotate(0deg)';
       curX = 0; curY = 0;
@@ -539,9 +493,6 @@ function clearLabels(card) {
   card.querySelectorAll('.card-label').forEach(el => el.style.opacity = 0);
 }
 
-// ─────────────────────────────────────────────────────────────
-//  FLY OUT
-// ─────────────────────────────────────────────────────────────
 function flyOutCard(card, direction) {
   const W = window.innerWidth, H = window.innerHeight;
   let tx = 0, ty = 0, rot = 0;
@@ -554,7 +505,6 @@ function flyOutCard(card, direction) {
   card.style.transform = `translateX(${tx}px) translateY(${ty}px) rotate(${rot}deg)`;
   card.style.opacity = '0';
 
-  // Splash
   splash.style.background = `radial-gradient(circle at center, rgba(255,107,157,0.15) 0%, transparent 70%)`;
   splash.style.opacity = '1';
   setTimeout(() => { splash.style.opacity = '0'; }, 350);
@@ -566,11 +516,8 @@ function flyOutCard(card, direction) {
     cardEls.shift();
     currentIndex++;
 
-    if (currentIndex >= cards.length) {
-      showEnd(); return;
-    }
+    if (currentIndex >= cards.length) { showEnd(); return; }
 
-    // Add next card to back of visual stack if needed
     const nextVisualIndex = currentIndex + 2;
     if (nextVisualIndex < cards.length) {
       const newCard = createCardEl(nextVisualIndex);
@@ -583,17 +530,11 @@ function flyOutCard(card, direction) {
     const newSwipe = cards[currentIndex].swipe;
     arrowHint.innerHTML = arrowHTML(newSwipe);
 
-    if (newSwipe === 'crack') {
-      setupCrackCard(cardEls[0]);
-    } else {
-      attachDrag(cardEls[0], newSwipe);
-    }
+    if (newSwipe === 'crack') setupCrackCard(cardEls[0]);
+    else attachDrag(cardEls[0], newSwipe);
   }, 440);
 }
 
-// ─────────────────────────────────────────────────────────────
-//  CRACK CARD (card 11)
-// ─────────────────────────────────────────────────────────────
 function createCrackCardEl(data, dataIndex) {
   const wrapper = document.createElement('div');
   wrapper.className = 'crack-card';
@@ -620,7 +561,6 @@ function setupCrackCard(card) {
   let clicks = 0;
   const MAX = 50;
 
-  // Size canvas
   function resizeCanvas() {
     canvas.width  = card.offsetWidth;
     canvas.height = card.offsetHeight;
@@ -674,7 +614,6 @@ function setupCrackCard(card) {
     cracks.push({ x: cx, y: cy, branches, age: clicks });
   }
 
-  // Shake
   function shake() {
     const intensity = Math.min(clicks / 5, 8);
     let t = 0;
@@ -693,7 +632,6 @@ function setupCrackCard(card) {
     shake();
     if (clicks % 2 === 0) addCrack();
     drawCracks();
-
     if (clicks >= MAX) {
       card.removeEventListener('click', onTap);
       card.removeEventListener('touchend', onTap);
@@ -706,10 +644,7 @@ function setupCrackCard(card) {
 }
 
 function triggerBreak(card, canvas, ctx) {
-  // Shatter: animate shards flying out
   const w = canvas.width, h = canvas.height;
-
-  // Draw shatter lines
   ctx.clearRect(0,0,w,h);
   for (let i = 0; i < 12; i++) {
     const angle = (Math.PI * 2 / 12) * i;
@@ -723,46 +658,29 @@ function triggerBreak(card, canvas, ctx) {
     ctx.stroke();
   }
 
-  // Fly the card away
   setTimeout(() => {
     card.style.transition = 'transform 0.6s ease-in, opacity 0.6s';
     card.style.transform = 'scale(1.08)';
     card.style.opacity = '0';
-
-    // Grow heart
-    growHeart(() => {
-      showFinalScreen();
-    });
+    growHeart(() => { showFinalScreen(); });
   }, 300);
 }
 
-// ─────────────────────────────────────────────────────────────
-//  HEART GROW
-// ─────────────────────────────────────────────────────────────
 function growHeart(onDone) {
   const el = document.getElementById('heartGrowEl');
   el.style.transition = 'none';
   el.style.transform = 'scale(0)';
   el.style.color = '#ff69b4';
-
-  // Force reflow
   el.offsetHeight;
-
   el.style.transition = 'transform 1.2s cubic-bezier(.17,.67,.35,1.2), color 1.2s';
   el.style.transform = 'scale(80)';
   el.style.color = '#ff85b3';
-
   setTimeout(onDone, 900);
 }
 
-// ─────────────────────────────────────────────────────────────
-//  FINAL SCREEN
-// ─────────────────────────────────────────────────────────────
 function showFinalScreen() {
   document.getElementById('finalScreen').style.display = 'flex';
   spawnFinalParticles();
-
-  // Reset heart grow
   setTimeout(() => {
     const el = document.getElementById('heartGrowEl');
     el.style.transition = 'none';
@@ -772,7 +690,7 @@ function showFinalScreen() {
 
 function spawnFinalParticles() {
   const container = document.getElementById('finalParticles');
-  const items = ['∞','∞','∞','♥','♥','♡','♡'];
+  const items  = ['∞','∞','∞','♥','♥','♡','♡'];
   const colors = ['#7b2dff','#9b4dff','#ff4466','#fff','#ffb3cc','#5500ff'];
 
   function spawn() {
@@ -793,9 +711,6 @@ function spawnFinalParticles() {
   setInterval(spawn, 400);
 }
 
-// ─────────────────────────────────────────────────────────────
-//  END SCREEN (after all swipeable cards)
-// ─────────────────────────────────────────────────────────────
 function showEnd() {
   arrowHint.style.display = 'none';
   mainTitle.style.display = 'none';
@@ -811,34 +726,25 @@ function restartCards() {
   updateTitle(0);
 }
 
-// ─────────────────────────────────────────────────────────────
-//  BACKGROUND PARTICLES (hearts + flowers)
-// ─────────────────────────────────────────────────────────────
-const bgLayer = document.getElementById('bgLayer');
+const bgLayer     = document.getElementById('bgLayer');
 const heartItems  = ['♡','♥','💕','💗'];
 const flowerItems = ['✿','❀','✾','🌸','🌺','❁'];
-const heartColors = [
-  '#ff4466','#ff6688','#ffaabb',  // reds
-  '#ffffff','#ffe0e8',             // whites
-  '#ff85b3','#ffb3cc','#ff69b4',  // pinks
-];
+const heartColors = ['#ff4466','#ff6688','#ffaabb','#ffffff','#ffe0e8','#ff85b3','#ffb3cc','#ff69b4'];
 
 function spawnParticle(isFlower) {
   const el = document.createElement('span');
   el.className = 'particle';
-
   if (isFlower) {
     el.textContent = flowerItems[Math.floor(Math.random() * flowerItems.length)];
-    const hue = Math.random() < 0.5 ? `hsl(${320 + Math.random()*30}deg,80%,${65+Math.random()*20}%)` : '#fff';
-    el.style.color = hue;
+    el.style.color = Math.random() < 0.5
+      ? `hsl(${320 + Math.random()*30}deg,80%,${65+Math.random()*20}%)`
+      : '#fff';
     el.style.fontSize = (0.7 + Math.random() * 0.9) + 'rem';
   } else {
     el.textContent = heartItems[Math.floor(Math.random() * heartItems.length)];
     el.style.color = heartColors[Math.floor(Math.random() * heartColors.length)];
-    // Small to medium sizes
     el.style.fontSize = (0.5 + Math.random() * 1.1) + 'rem';
   }
-
   el.style.left = Math.random() * 100 + 'vw';
   const dur = 7 + Math.random() * 9;
   el.style.animationDuration = dur + 's';
@@ -847,15 +753,10 @@ function spawnParticle(isFlower) {
   setTimeout(() => el.remove(), (dur + 2) * 1000);
 }
 
-// Initial burst
-for (let i = 0; i < 18; i++) spawnParticle(i % 4 === 0); // mix hearts + flowers
-// Ongoing
+for (let i = 0; i < 18; i++) spawnParticle(i % 4 === 0);
 setInterval(() => spawnParticle(false), 900);
 setInterval(() => spawnParticle(true),  2200);
 
-// ─────────────────────────────────────────────────────────────
-//  INIT
-// ─────────────────────────────────────────────────────────────
 buildCards();
 updateTitle(0);
 </script>
